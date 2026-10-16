@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import ProductsList from '@/components/ProductsList';
 import ProductBundles from '@/components/products/ProductBundles';
 import SearchBar from '@/components/products/SearchBar';
-import CategoryFilter from '@/components/products/CategoryFilter';
 import { supabase } from '@/lib/customSupabaseClient';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -57,13 +56,6 @@ const StorePage = () => {
         <section className="py-4 md:py-6 bg-muted/10 border-t border-b border-border w-full">
           <div className="container-premium">
             <ProductBundles />
-          </div>
-        </section>
-
-        {/* 5) CategoryFilter Component */}
-        <section className="py-4 md:py-6 w-full">
-          <div className="container-premium">
-            <CategoryFilter />
           </div>
         </section>
 
