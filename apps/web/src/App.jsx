@@ -24,10 +24,10 @@ function App() {
     <CartProvider>
       <Router future={{ v7_startTransition: true }}>
         <Routes>
-          <Route path="/admin/setup" element={<AdminSetupPage />} />
-          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/nst-admin/setup" element={<AdminSetupPage />} />
+          <Route path="/nst-admin/login" element={<AdminLoginPage />} />
           <Route 
-            path="/admin" 
+            path="/nst-admin" 
             element={
               <ProtectedRoute>
                 <AdminDashboardPage />

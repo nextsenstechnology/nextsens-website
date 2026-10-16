@@ -130,7 +130,7 @@ const AdminDashboardPage = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/admin/login');
+    navigate('/nst-admin/login');
   };
 
   // Filter Logic Products

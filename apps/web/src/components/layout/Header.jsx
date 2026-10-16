@@ -18,7 +18,7 @@ const Header = ({ onCartClick }) => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
         e.preventDefault();
-        navigate('/admin/login');
+        navigate('/nst-admin/login');
       }
     };
     window.addEventListener('keydown', handleKeyDown);

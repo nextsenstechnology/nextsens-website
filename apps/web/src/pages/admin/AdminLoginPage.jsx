@@ -29,7 +29,7 @@ const AdminLoginPage = () => {
         if (error) throw error;
         
         if (data && !data.adminExists) {
-          navigate('/admin/setup');
+          navigate('/nst-admin/setup');
         }
       } catch (error) {
         toast({
@@ -48,7 +48,7 @@ const AdminLoginPage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/admin');
+      navigate('/nst-admin');
     }
   }, [user, navigate]);
 
@@ -67,7 +67,7 @@ const AdminLoginPage = () => {
         title: "Login Successful!",
         description: "Redirecting to your dashboard...",
       });
-      navigate('/admin');
+      navigate('/nst-admin');
     }
     setLoading(false);
   };

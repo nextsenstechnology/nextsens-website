@@ -36,7 +36,7 @@ const AdminSetupPage = () => {
             title: "Setup Not Available",
             description: "An admin account already exists. Redirecting to login.",
           });
-          setTimeout(() => navigate('/admin/login'), 3000);
+          setTimeout(() => navigate('/nst-admin/login'), 3000);
         } else {
           // If no admin, proceed to set up storage.
           const { error: storageError } = await supabase.rpc('setup_product_files_storage');
@@ -91,7 +91,7 @@ const AdminSetupPage = () => {
           title: "Admin Account Created Successfully!",
           description: "You will be redirected to the login page.",
         });
-        setTimeout(() => navigate('/admin/login'), 2000);
+        setTimeout(() => navigate('/nst-admin/login'), 2000);
 
     } catch (error) {
         toast({
