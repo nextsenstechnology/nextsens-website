@@ -53,11 +53,7 @@ const StorePage = () => {
         </section>
 
         {/* 4) ProductBundles Component */}
-        <section className="py-4 md:py-6 bg-muted/10 border-t border-b border-border w-full">
-          <div className="container-premium">
-            <ProductBundles />
-          </div>
-        </section>
+        <ProductBundles />
 
         {/* Support CTA (Compact) */}
         <section className="py-8 bg-[#1F2937] text-white w-full mt-auto">

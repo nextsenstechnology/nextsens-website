@@ -156,6 +156,9 @@ const BundlesList = ({ bundles, loading, onBundleChange, products, openSignal })
                         src={bundle.image_url || 'https://via.placeholder.com/50'} 
                         alt={bundle.name} 
                         className="h-12 w-12 object-contain rounded-md bg-white border border-border p-1" 
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/50?text=Kit';
+                        }}
                       />
                     </TableCell>
                     <TableCell className="font-medium max-w-[200px] truncate" title={bundle.name}>

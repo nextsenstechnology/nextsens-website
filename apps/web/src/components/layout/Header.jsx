@@ -113,6 +113,22 @@ const Header = ({ onCartClick }) => {
               </NavLink>
 
               <NavLink
+                to="/bundles"
+                className={({ isActive }) =>
+                  cn(
+                    navigationMenuTriggerStyle(),
+                    isActive ? "text-accent font-semibold" : "text-foreground",
+                    "hover:text-accent transition-colors duration-300 font-medium bg-transparent flex items-center gap-1.5"
+                  )
+                }
+              >
+                <span>Equipment Bundles</span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                  Save
+                </span>
+              </NavLink>
+
+              <NavLink
                 to="/about"
                 className={({ isActive }) =>
                   cn(
@@ -199,6 +215,17 @@ const Header = ({ onCartClick }) => {
                 style={({ isActive }) => (isActive ? activeLinkStyle : undefined)}
               >
                 Store
+              </NavLink>
+              <NavLink
+                to="/bundles"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-foreground hover:text-accent font-medium text-lg w-full text-center py-2 flex items-center justify-center gap-2"
+                style={({ isActive }) => (isActive ? activeLinkStyle : undefined)}
+              >
+                <span>Equipment Bundles</span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                  Save
+                </span>
               </NavLink>
               <NavLink
                 to="/about"
