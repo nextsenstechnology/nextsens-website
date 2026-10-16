@@ -79,10 +79,10 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>NextSens Tech | Precision Electrochemical Instruments & Electrodes</title>
+        <title>NextSens Tech | Potentiostat, Galvanostat & EIS Bundles</title>
         <meta 
           name="description" 
-          content="High-precision pH glass electrodes, Karl Fischer titrators, reference sensors, and electrochemical instruments for research laboratories and industrial QC." 
+          content="Research-grade Potentiostat, Galvanostat, and EIS workstation bundles with working, counter, and reference electrodes for battery and corrosion testing." 
         />
         <link rel="canonical" href="https://www.nextsenstech.com" />
       </Helmet>
@@ -98,30 +98,30 @@ const HomePage = () => {
             <div className="max-w-2xl text-left">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold mb-2">
                 <Sparkles className="w-3 h-3 text-primary" />
-                <span>Precision Electrochemical Instrumentation</span>
+                <span>Turnkey Electrochemical Workstations</span>
               </div>
 
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
-                Pioneering Precision in <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-600 to-accent">Electrochemical Analysis</span>
+                Potentiostat, Galvanostat & <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-600 to-accent">EIS Bundles</span>
               </h1>
 
               <p className="mt-1.5 text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                Laboratory-grade pH glass electrodes, Karl Fischer titrators, reference probes, and electrochemical cells engineered for research institutes, universities, and industrial QC.
+                Complete electrochemical workstations bundled with calibrated working, counter, and reference electrodes for battery research, corrosion analysis, and electrochemistry.
               </p>
 
               {/* Technical Badges in a single compact row */}
               <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] sm:text-xs font-medium text-foreground">
                 <span className="flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-                  ±0.01 pH Accuracy
+                  Complete 3-Electrode Bundle (WE / CE / RE)
                 </span>
                 <span className="flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-                  Universal BNC / DIN Fit
+                  EIS & Voltammetry Ready
                 </span>
                 <span className="flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-                  Fast Response (&lt;5s)
+                  Battery & Corrosion Testing
                 </span>
                 <span className="flex items-center gap-1 text-primary font-semibold">
                   <ShieldCheck className="w-3.5 h-3.5 text-primary flex-shrink-0" />

@@ -34,7 +34,7 @@ const StorePage = () => {
         {/* 1) Compact Heading */}
         <div className="bg-muted/30 py-2 md:py-3 border-b border-border text-center px-4 w-full">
           <p className="text-sm md:text-base text-muted-foreground font-medium max-w-4xl mx-auto leading-tight">
-            <strong className="text-foreground">Browse Our Instruments</strong> – High-precision electrochemical instruments for corrosion testing, battery research, water analysis, and laboratory applications
+            <strong className="text-foreground">Electrochemical Workstations & Electrodes</strong> – Potentiostats, Galvanostats, EIS bundles, and calibrated electrode systems for research and industrial testing
           </p>
         </div>
 
