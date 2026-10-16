@@ -32,6 +32,7 @@ const OrderConfirmationPage = () => {
   useEffect(() => {
     let timeoutId;
     const fetchOrder = async () => {
+      try {
         // First try secure RPC lookup (which prevents table-wide scraping)
         let orderRecord = null;
         const { data: rpcData, error: rpcError } = await supabase
