@@ -1,4 +1,5 @@
 import { corsHeaders } from "./cors.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 
 /**
  * ==========================================
@@ -14,12 +15,7 @@ import { corsHeaders } from "./cors.ts";
  * 
  * SECURITY NOTES:
  * - By executing this logic in a Supabase Edge Function, the `RAZORPAY_KEY_SECRET` is NEVER exposed to the public internet or frontend clients.
- * - This prevents malicious actors from generating arbitrary orders or viewing merchant secrets.
- * 
- * TESTING INSTRUCTIONS:
- * - Ensure LIVE keys are populated in your Supabase project's secrets.
- * - Real funds will be processed unless you temporarily replace `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` 
- *   with Razorpay Test Keys via the Supabase Dashboard.
+ * - Server-side price integrity checks verify item prices against the database to block tampering.
  * ==========================================
  */
 
@@ -39,6 +35,61 @@ Deno.serve(async (req) => {
       throw new Error('Razorpay LIVE keys are missing in Edge Function environment variables.');
     }
 
+    let finalAmount = amount;
+
+    // Server-side price integrity check: verify prices against database
+    if (order_data?.items && Array.isArray(order_data.items) && order_data.items.length > 0) {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+      if (supabaseUrl && supabaseKey) {
+        try {
+          const supabase = createClient(supabaseUrl, supabaseKey);
+          const itemIds = order_data.items.map((i: any) => i.id || i.product_id).filter(Boolean);
+
+          if (itemIds.length > 0) {
+            const { data: dbProducts } = await supabase
+              .from('products')
+              .select('id, price, discount_percentage, base_price')
+              .in('id', itemIds);
+
+            if (dbProducts && dbProducts.length > 0) {
+              const productMap = new Map(dbProducts.map((p: any) => [p.id, p]));
+              let computedSubtotal = 0;
+
+              for (const item of order_data.items) {
+                const productId = item.id || item.product_id;
+                const dbProd = productMap.get(productId);
+                const qty = Math.max(1, parseInt(item.quantity) || 1);
+
+                if (dbProd) {
+                  let effectiveUnitPrice = Number(dbProd.price) || 0;
+                  if (dbProd.discount_percentage && dbProd.discount_percentage > 0) {
+                    const base = Number(dbProd.base_price || dbProd.price) || 0;
+                    effectiveUnitPrice = base * (1 - dbProd.discount_percentage / 100);
+                  }
+                  computedSubtotal += effectiveUnitPrice * qty;
+                } else {
+                  computedSubtotal += (Number(item.price) || 0) * qty;
+                }
+              }
+
+              const computedGst = computedSubtotal * 0.18;
+              const computedTotalPaise = Math.round((computedSubtotal + computedGst) * 100);
+
+              // Block price tampering: if client submitted a lower price, enforce server computed total
+              if (amount < computedTotalPaise - 100) {
+                console.warn(`Price tampering detected and blocked! Client sent: ${amount}, Expected: ${computedTotalPaise}`);
+                finalAmount = computedTotalPaise;
+              }
+            }
+          }
+        } catch (verifyErr) {
+          console.error("Price verification warning:", verifyErr);
+        }
+      }
+    }
+
     const authHeader = `Basic ${btoa(`${key_id}:${key_secret}`)}`;
 
     const razorpayResponse = await fetch('https://api.razorpay.com/v1/orders', {
@@ -48,7 +99,7 @@ Deno.serve(async (req) => {
         'Authorization': authHeader,
       },
       body: JSON.stringify({
-        amount,
+        amount: finalAmount,
         currency,
         receipt: `receipt_${Date.now()}`
       }),

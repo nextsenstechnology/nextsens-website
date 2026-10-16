@@ -125,6 +125,18 @@ const ContactPage = () => {
             delay: 0.2
           }} className="lg:col-span-2 bg-background p-8 rounded-2xl shadow-lg border">
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {/* Honeypot field for bot spam prevention (invisible to real humans) */}
+                <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                  <label htmlFor="hp_check">Leave this field blank</label>
+                  <input
+                    id="hp_check"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    {...register("hp_check")}
+                  />
+                </div>
+
                 <div className="grid w-full items-center gap-1.5">
                   <Label htmlFor="name">Full Name</Label>
                   <Input id="name" placeholder="John Doe" {...register("name", {

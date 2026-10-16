@@ -104,6 +104,18 @@ import React, { useState, useEffect } from 'react';
               </motion.div>
               <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }} className="bg-background p-8 rounded-2xl shadow-lg border">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  {/* Honeypot field for bot spam prevention (invisible to real humans) */}
+                  <div className="hidden" aria-hidden="true" style={{ display: 'none' }}>
+                    <label htmlFor="hp_check">Leave this field blank</label>
+                    <input
+                      id="hp_check"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      {...register("hp_check")}
+                    />
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="grid w-full items-center gap-1.5">
                       <Label htmlFor="productName">Product</Label>
