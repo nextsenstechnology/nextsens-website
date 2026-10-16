@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const SearchBar = ({ products }) => {
+const SearchBar = ({ products, onSearchChange, className }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +31,7 @@ const SearchBar = ({ products }) => {
 
     const query = searchQuery.toLowerCase();
     const filtered = products.filter(product => {
-      const nameMatch = product.name.toLowerCase().includes(query);
+      const nameMatch = product.name?.toLowerCase().includes(query);
       const categoryMatch = product.category?.toLowerCase().includes(query);
       const descriptionMatch = product.short_description?.toLowerCase().includes(query);
       const featuresMatch = product.features?.some(f => f.toLowerCase().includes(query));
@@ -60,27 +60,34 @@ const SearchBar = ({ products }) => {
     setSearchQuery('');
     setSearchResults([]);
     setIsOpen(false);
+    onSearchChange?.('');
+  };
+
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setSearchQuery(val);
+    onSearchChange?.(val);
   };
 
   return (
-    <div ref={searchRef} className="relative w-full max-w-2xl mx-auto">
+    <div ref={searchRef} className={`relative w-full max-w-2xl mx-auto ${className || ''}`}>
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-accent" />
+        <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-accent" />
         <Input
           type="text"
           placeholder="Search products by name, category, or specifications..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-12 pr-12 py-6 text-base bg-card text-foreground border-border rounded-xl shadow-sm focus:shadow-md focus:border-accent focus:ring-accent smooth-transition"
+          onChange={handleInputChange}
+          className="pl-10 pr-10 h-10 sm:h-11 text-xs sm:text-sm bg-card text-foreground border-border rounded-xl shadow-sm focus:shadow-md focus:border-accent focus:ring-accent smooth-transition"
         />
         {searchQuery && (
           <Button
             variant="ghost"
             size="icon"
             onClick={handleClear}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-1.5 top-1/2 transform -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </Button>
         )}
       </div>

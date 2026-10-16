@@ -1,23 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Zap, ShieldCheck, Sparkles, CheckCircle2, ArrowRight, Shield, Award, Phone } from 'lucide-react';
-import HomePageCategoryFilter from '@/components/products/HomePageCategoryFilter';
-import ProductCarousel from '@/components/products/ProductCarousel';
-import ProductSearch from '@/components/products/ProductSearch';
+import { Sparkles, CheckCircle2, ArrowRight, Shield, Award, Phone, Zap, ShieldCheck, X } from 'lucide-react';
+import SearchBar from '@/components/products/SearchBar';
+import CategoryFilterBar from '@/components/products/CategoryFilterBar';
 import ProductCard from '@/components/products/ProductCard';
 import { supabase } from '@/lib/customSupabaseClient';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -28,278 +29,293 @@ const HomePage = () => {
         console.error('Error fetching products:', error);
       } else {
         setProducts(data || []);
-        setFilteredProducts(data || []);
       }
+      setLoading(false);
     };
 
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    if (selectedCategory === 'all') {
-      setFilteredProducts(products);
-    } else {
-      const filtered = products.filter(product => product.category === selectedCategory);
-      setFilteredProducts(filtered);
-    }
-  }, [selectedCategory, products]);
+  // Filter products by selected category and live search query
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      // 1. Category check
+      if (selectedCategory !== 'all') {
+        const selCat = selectedCategory.toLowerCase();
+        const prodCat = product.category?.toLowerCase() || '';
+        const match = prodCat === selCat || prodCat.includes(selCat) || selCat.includes(prodCat);
+        if (!match) return false;
+      }
+
+      // 2. Search query check
+      if (searchQuery.trim().length > 0) {
+        const q = searchQuery.toLowerCase().trim();
+        const nameMatch = product.name?.toLowerCase().includes(q);
+        const catMatch = product.category?.toLowerCase().includes(q);
+        const descMatch = product.short_description?.toLowerCase().includes(q);
+        const featMatch = product.features?.some(f => f.toLowerCase().includes(q));
+        const specMatch = product.specifications
+          ? Object.values(product.specifications).some(v => String(v).toLowerCase().includes(q))
+          : false;
+
+        if (!nameMatch && !catMatch && !descMatch && !featMatch && !specMatch) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [products, selectedCategory, searchQuery]);
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
   };
 
+  const handleResetFilters = () => {
+    setSelectedCategory('all');
+    setSearchQuery('');
+  };
+
   return (
     <>
       <Helmet>
-        <title>NextSens Tech | Precision Electrochemical Instruments</title>
-        <meta name="description" content="Welcome to NextSens Tech, your premier source for high-quality pH electrodes, Karl Fischer titrators, and other precision electrochemical instruments." />
+        <title>NextSens Tech | Precision Electrochemical Instruments & Electrodes</title>
+        <meta 
+          name="description" 
+          content="High-precision pH glass electrodes, Karl Fischer titrators, reference sensors, and electrochemical instruments for research laboratories and industrial QC." 
+        />
         <link rel="canonical" href="https://www.nextsenstech.com" />
       </Helmet>
 
-      {/* Refined High-Impact Scientific Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-secondary/50 via-background to-background py-12 md:py-20 border-b">
-        {/* Subtle background tech grid effect */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none -z-10"></div>
+      {/* 1. Ultra-Compact Scientific Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-secondary/30 via-background to-background py-4 md:py-6 border-b">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none -z-10"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             
-            {/* Left 7 Columns: Scientific Value Proposition & CTAs */}
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7 }}
-              className="lg:col-span-7 text-left"
-            >
-              {/* Eyebrow Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs md:text-sm font-semibold mb-5">
-                <Sparkles className="w-4 h-4 text-primary" />
+            {/* Left Content */}
+            <div className="max-w-2xl text-left">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold mb-2">
+                <Sparkles className="w-3 h-3 text-primary" />
                 <span>Precision Electrochemical Instrumentation</span>
               </div>
 
-              {/* Main Headline */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground tracking-tight leading-[1.12]">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
                 Pioneering Precision in <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-600 to-accent">Electrochemical Analysis</span>
               </h1>
 
-              {/* Supporting Subtitle */}
-              <p className="mt-5 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                High-stability pH glass electrodes, Karl Fischer titration probes, and electrochemical sensors. Engineered with low sodium-ion error membranes and zero-drift junctions for research laboratories and industrial quality control.
+              <p className="mt-1.5 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Laboratory-grade pH glass electrodes, Karl Fischer titrators, reference probes, and electrochemical cells engineered for research institutes, universities, and industrial QC.
               </p>
 
-              {/* Key Technical Badges */}
-              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-xs sm:text-sm font-medium text-foreground">
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                  ±0.01 pH Lab-Grade Accuracy
+              {/* Technical Badges in a single compact row */}
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] sm:text-xs font-medium text-foreground">
+                <span className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                  ±0.01 pH Accuracy
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                  Universal Gold BNC / DIN Fit
+                <span className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                  Universal BNC / DIN Fit
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                  Fast Response (&lt;5 Seconds)
+                <span className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                  Fast Response (&lt;5s)
+                </span>
+                <span className="flex items-center gap-1 text-primary font-semibold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                  18% GST ITC Invoices
                 </span>
               </div>
+            </div>
 
-              {/* CTA Action Buttons */}
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Button asChild size="lg" className="rounded-lg shadow-md hover:shadow-lg transition-all group font-semibold text-base px-6">
+            {/* Right Action Buttons */}
+            <div className="flex flex-wrap md:flex-col items-start md:items-end justify-start gap-2 shrink-0 pt-2 md:pt-0">
+              <div className="flex items-center gap-2">
+                <Button asChild size="sm" className="rounded-lg shadow-sm font-semibold text-xs px-4 h-9 group">
                   <Link to="/store">
-                    Browse Online Store
-                    <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    Browse Store
+                    <ArrowRight className="ml-1.5 w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="rounded-lg font-semibold text-base px-6 border-border hover:bg-muted">
+                <Button asChild size="sm" variant="outline" className="rounded-lg font-semibold text-xs px-4 h-9 border-border hover:bg-muted">
                   <Link to="/contact">Request Lab Quote</Link>
                 </Button>
-                <a
-                  href="https://wa.me/919321175585?text=Hi%2C%20I%20am%20inquiring%20about%20NextSens%20electrochemical%20instruments"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 hover:underline px-2 py-1 transition-colors"
-                >
-                  <Phone className="w-4 h-4" />
-                  Instant WhatsApp Inquiry
-                </a>
               </div>
-
-              {/* Instant Search Bar */}
-              <div className="mt-8 pt-6 border-t border-border/80 max-w-xl">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
-                  Quick Catalog Search
-                </p>
-                <ProductSearch />
-              </div>
-            </motion.div>
-
-            {/* Right 5 Columns: Visual Instrument Showcase Card */}
-            <motion.div 
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="lg:col-span-5 relative"
-            >
-              {/* Ambient Glow */}
-              <div className="absolute -inset-2 bg-gradient-to-tr from-primary/30 to-accent/30 rounded-3xl blur-2xl -z-10"></div>
-
-              {/* Interactive Showcase Card */}
-              <div className="bg-card/90 backdrop-blur-xl border border-border/80 rounded-2xl p-6 sm:p-7 shadow-2xl space-y-6 text-left">
-                <div className="flex items-center justify-between border-b pb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                      NextSens Flagship Series
-                    </span>
-                  </div>
-                  <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2.5 py-1 rounded-full border border-primary/20">
-                    ISO Calibrated
-                  </span>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold text-foreground">
-                    Precision Glass pH & Titration Electrodes
-                  </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                    Equipped with high-purity glass bulbs and porous ceramic junctions for research and industrial titrators.
-                  </p>
-                </div>
-
-                {/* Technical Specs Grid */}
-                <div className="grid grid-cols-2 gap-2.5 text-xs">
-                  <div className="bg-muted/40 p-2.5 rounded-lg border border-border/50">
-                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Measuring Range</span>
-                    <span className="font-bold text-foreground">0 – 14 pH</span>
-                  </div>
-                  <div className="bg-muted/40 p-2.5 rounded-lg border border-border/50">
-                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Temperature Limit</span>
-                    <span className="font-bold text-foreground">0°C to 80°C</span>
-                  </div>
-                  <div className="bg-muted/40 p-2.5 rounded-lg border border-border/50">
-                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Junction Type</span>
-                    <span className="font-bold text-foreground">Ceramic / Refillable</span>
-                  </div>
-                  <div className="bg-muted/40 p-2.5 rounded-lg border border-border/50">
-                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Connector</span>
-                    <span className="font-bold text-foreground">Gold-Plated BNC</span>
-                  </div>
-                </div>
-
-                {/* Trust Badges Bar */}
-                <div className="pt-2 border-t flex items-center justify-between text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1 font-medium text-foreground">
-                    <Shield className="w-3.5 h-3.5 text-primary" />
-                    GST Input Tax Credit
-                  </span>
-                  <span className="font-medium text-emerald-600">
-                    Dispatched in 24–48h
-                  </span>
-                </div>
-              </div>
-            </motion.div>
+              <a
+                href="https://wa.me/919321175585?text=Hi%2C%20I%20am%20inquiring%20about%20NextSens%20electrochemical%20instruments"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 hover:underline px-1 py-0.5 transition-colors"
+              >
+                <Phone className="w-3 h-3" />
+                Instant WhatsApp Inquiry (+91-9321175585)
+              </a>
+            </div>
 
           </div>
         </div>
       </section>
 
-      <HomePageCategoryFilter 
-        selectedCategory={selectedCategory}
-        onCategoryChange={handleCategoryChange}
-      />
-
-      {/* Filtered Products Section */}
-      <section className="py-16 bg-secondary/30">
+      {/* 2. Compact Store Products & Category Filters Section */}
+      <section id="products-catalog" className="py-4 md:py-6 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground">
-              {selectedCategory === 'all' ? 'All Products' : selectedCategory}
-            </h2>
-            <p className="mt-2 text-lg text-muted-foreground">
-              {selectedCategory === 'all' 
-                ? 'Browse our complete range of precision instruments' 
-                : `Explore our ${selectedCategory.toLowerCase()} collection`}
-            </p>
+          
+          {/* Top Bar: Search Bar */}
+          <div className="mb-2.5">
+            <SearchBar 
+              products={products} 
+              onSearchChange={(q) => setSearchQuery(q)} 
+            />
           </div>
-          {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+          {/* Category Filter Bar (Store Component) */}
+          <div className="mb-3">
+            <CategoryFilterBar 
+              selectedCategory={selectedCategory}
+              onCategoryChange={handleCategoryChange}
+            />
+          </div>
+
+          {/* Compact Status Line directly above products (Minimal Spacing) */}
+          <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground mb-3 px-1 border-b pb-2">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-foreground">
+                {filteredProducts.length} {filteredProducts.length === 1 ? 'Product' : 'Products'} Available
+              </span>
+              {selectedCategory !== 'all' && (
+                <span className="inline-flex items-center gap-1 bg-accent/10 text-accent font-medium px-2 py-0.5 rounded text-xs">
+                  Category: {selectedCategory}
+                  <button 
+                    onClick={() => setSelectedCategory('all')} 
+                    className="hover:text-foreground ml-0.5"
+                    title="Clear category filter"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+              {searchQuery && (
+                <span className="inline-flex items-center gap-1 bg-primary/10 text-primary font-medium px-2 py-0.5 rounded text-xs">
+                  Search: "{searchQuery}"
+                  <button 
+                    onClick={() => setSearchQuery('')} 
+                    className="hover:text-foreground ml-0.5"
+                    title="Clear search filter"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3">
+              {(selectedCategory !== 'all' || searchQuery) && (
+                <button
+                  onClick={handleResetFilters}
+                  className="text-xs text-accent hover:underline font-medium"
+                >
+                  Reset Filters
+                </button>
+              )}
+              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex text-xs font-semibold text-primary hover:text-accent p-0 h-auto">
+                <Link to="/store">Open Full Store →</Link>
+              </Button>
+            </div>
+          </div>
+
+          {/* Products Grid */}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <p className="mt-2 text-xs text-muted-foreground">Loading instruments...</p>
+            </div>
+          ) : filteredProducts.length > 0 ? (
+            <div className="grid-products">
               {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-lg text-muted-foreground">
-                No products found in this category.
+            <div className="text-center py-10 border rounded-xl bg-card">
+              <p className="text-sm font-medium text-foreground">
+                No products found matching your selection.
               </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Try selecting "All Products" or modifying your search term.
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleResetFilters} 
+                className="mt-3 text-xs"
+              >
+                Show All Products
+              </Button>
             </div>
           )}
-        </div>
-      </section>
 
-      {/* All Products Carousel Section */}
-      <section className="py-16 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground">Featured Products</h2>
-            <p className="mt-2 text-lg text-muted-foreground">Our complete catalog, in motion.</p>
+          {/* Mobile store link button */}
+          <div className="mt-6 text-center sm:hidden">
+            <Button asChild variant="outline" size="sm" className="w-full text-xs">
+              <Link to="/store">View Store with Advanced Sidebar Filters →</Link>
+            </Button>
           </div>
-          <ProductCarousel />
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
-      <section className="py-20 bg-secondary/30 border-t">
+      {/* 3. Compact "Why NextSens Tech" Section */}
+      <section className="py-8 md:py-10 bg-secondary/30 border-t">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-3">
-              <Award className="w-3.5 h-3.5" />
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold mb-1.5">
+              <Award className="w-3 h-3" />
               <span>Engineered for Laboratories & Industry</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">The NextSens Advantage</h2>
-            <p className="mt-3 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">The NextSens Advantage</h2>
+            <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto">
               Built to meet stringent electrochemical measurement standards across research and quality assurance.
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border border-border/80 shadow-md hover:shadow-xl transition-all duration-300">
+          <div className="grid md:grid-cols-3 gap-4 sm:gap-6">
+            <Card className="border border-border/80 shadow-sm hover:shadow-md transition-all duration-300">
               <CardHeader className="text-left pb-2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary mb-2">
-                  <Award className="h-6 w-6" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary mb-1.5">
+                  <Award className="h-4.5 w-4.5" />
                 </div>
-                <CardTitle className="text-xl font-bold text-foreground">Laboratory-Grade Precision</CardTitle>
+                <CardTitle className="text-base font-bold text-foreground">Laboratory-Grade Precision</CardTitle>
               </CardHeader>
               <CardContent className="text-left">
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   Low sodium-ion error glass membranes and porous ceramic junctions deliver ±0.01 pH accuracy, rapid stability (&lt;5s), and minimal drift even in challenging buffer matrices.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border border-border/80 shadow-md hover:shadow-xl transition-all duration-300">
+            <Card className="border border-border/80 shadow-sm hover:shadow-md transition-all duration-300">
               <CardHeader className="text-left pb-2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary mb-2">
-                  <Zap className="h-6 w-6" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary mb-1.5">
+                  <Zap className="h-4.5 w-4.5" />
                 </div>
-                <CardTitle className="text-xl font-bold text-foreground">Universal Instrument Compatibility</CardTitle>
+                <CardTitle className="text-base font-bold text-foreground">Universal Instrument Compatibility</CardTitle>
               </CardHeader>
               <CardContent className="text-left">
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   Equipped with industry-standard gold-plated BNC and DIN connectors. Fully plug-and-play compatible with Metrohm, Thermo Orion, Hanna, and CHI workstations.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border border-border/80 shadow-md hover:shadow-xl transition-all duration-300">
+            <Card className="border border-border/80 shadow-sm hover:shadow-md transition-all duration-300">
               <CardHeader className="text-left pb-2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary mb-2">
-                  <ShieldCheck className="h-6 w-6" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary mb-1.5">
+                  <ShieldCheck className="h-4.5 w-4.5" />
                 </div>
-                <CardTitle className="text-xl font-bold text-foreground">Direct Supply & GST Invoicing</CardTitle>
+                <CardTitle className="text-base font-bold text-foreground">Direct Supply & GST Invoicing</CardTitle>
               </CardHeader>
               <CardContent className="text-left">
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   Direct manufacturer pricing with zero intermediary markups. Full 18% GST tax invoices issued instantly with Input Tax Credit (ITC) for universities and corporate buyers.
                 </p>
               </CardContent>

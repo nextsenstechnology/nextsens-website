@@ -33,22 +33,22 @@ const Header = ({ onCartClick }) => {
   return (
     <header className="bg-background/95 backdrop-blur-lg shadow-sm sticky top-0 z-40 border-b">
       {/* Top Announcement & Trust Bar */}
-      <div className="bg-[#0F172A] text-slate-300 text-xs py-1.5 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-1.5">
-          <div className="flex items-center gap-3 text-[11px] sm:text-xs">
+      <div className="bg-[#0F172A] text-slate-300 text-xs py-1 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-1">
+          <div className="flex items-center gap-2.5 text-[10px] sm:text-xs">
             <span className="flex items-center gap-1.5 text-slate-200 font-medium">
               <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               ISO Calibration Standard
             </span>
             <span className="hidden md:inline text-slate-600">|</span>
-            <span className="hidden md:inline text-slate-300">Pan-India Express Dispatch</span>
+            <span className="hidden md:inline text-slate-300">Pan-India Dispatch</span>
             <span className="hidden sm:inline text-slate-600">|</span>
-            <span className="text-amber-400 font-semibold">18% GST Input Tax Credit (ITC) Invoices</span>
+            <span className="text-amber-400 font-semibold">18% GST ITC Invoices</span>
           </div>
-          <div className="flex items-center gap-3 text-[11px] sm:text-xs">
+          <div className="flex items-center gap-2.5 text-[10px] sm:text-xs">
             <a 
               href="tel:+919321175585" 
-              className="flex items-center gap-1.5 text-slate-200 hover:text-white transition-colors"
+              className="flex items-center gap-1 text-slate-200 hover:text-white transition-colors"
             >
               <Phone className="w-3 h-3 text-emerald-400" />
               <span>+91-9321175585</span>
@@ -56,7 +56,7 @@ const Header = ({ onCartClick }) => {
             <span className="text-slate-600">|</span>
             <a 
               href="mailto:sales@nextsenstech.com" 
-              className="hidden lg:flex items-center gap-1.5 text-slate-200 hover:text-white transition-colors"
+              className="hidden lg:flex items-center gap-1 text-slate-200 hover:text-white transition-colors"
             >
               <Mail className="w-3 h-3 text-sky-400" />
               <span>sales@nextsenstech.com</span>
@@ -66,7 +66,7 @@ const Header = ({ onCartClick }) => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           
           {/* LEFT SIDE: Logo ONLY */}
           <Link to="/" className="flex items-center space-x-3 group shrink-0">

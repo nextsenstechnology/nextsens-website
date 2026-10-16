@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-const CategoryFilterBar = ({ selectedCategory, onCategoryChange }) => {
+const CategoryFilterBar = ({ selectedCategory, onCategoryChange, className }) => {
   const categories = [
     { id: 'all', label: 'All Products' },
     { id: 'Electrodes', label: 'Electrodes' },
@@ -12,18 +12,19 @@ const CategoryFilterBar = ({ selectedCategory, onCategoryChange }) => {
   ];
 
   return (
-    <div className="bg-card border border-border rounded-xl shadow-sm p-4 mb-6">
-      <div className="flex flex-wrap gap-3 justify-center">
+    <div className={cn("bg-card border border-border rounded-xl shadow-sm p-2 sm:p-2.5", className)}>
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
         {categories.map((category) => (
           <Button
             key={category.id}
             variant="ghost"
+            size="sm"
             onClick={() => onCategoryChange(category.id)}
             className={cn(
-              'rounded-md px-6 py-2 font-medium transition-all duration-300',
+              'rounded-lg px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium transition-all duration-200 h-8 sm:h-9',
               selectedCategory === category.id
-                ? 'bg-accent text-white shadow-sm scale-105 hover:bg-primary'
-                : 'bg-muted text-foreground hover:bg-muted/80 hover:text-accent hover:scale-105'
+                ? 'bg-accent text-white shadow-sm hover:bg-primary font-semibold'
+                : 'bg-muted/70 text-foreground hover:bg-muted hover:text-accent'
             )}
           >
             {category.label}

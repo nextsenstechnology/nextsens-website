@@ -118,6 +118,7 @@ const ProductsList = () => {
       <CategoryFilterBar
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
+        className="mb-4"
       />
 
       <div className="flex gap-8">
