@@ -32,17 +32,28 @@ const OrderConfirmationPage = () => {
   useEffect(() => {
     let timeoutId;
     const fetchOrder = async () => {
-      try {
-        const { data, error: fetchError } = await supabase
-            .from('orders')
-            .select('*')
-            .eq('order_id', order_id)
-            .single();
+        // First try secure RPC lookup (which prevents table-wide scraping)
+        let orderRecord = null;
+        const { data: rpcData, error: rpcError } = await supabase
+            .rpc('get_order_by_id', { lookup_order_id: order_id });
             
-        if (fetchError || !data) throw new Error('Order not found.');
-        if (data.payment_status !== 'completed') throw new Error('Payment not completed.');
+        if (!rpcError && rpcData && rpcData.length > 0) {
+          orderRecord = rpcData[0];
+        } else {
+          // Fallback to direct query if RPC is not yet created
+          const { data: directData, error: directError } = await supabase
+              .from('orders')
+              .select('*')
+              .eq('order_id', order_id)
+              .single();
+          if (directError || !directData) throw new Error('Order not found.');
+          orderRecord = directData;
+        }
 
-        setOrder(data);
+        if (!orderRecord) throw new Error('Order not found.');
+        if (orderRecord.payment_status !== 'completed') throw new Error('Payment not completed.');
+
+        setOrder(orderRecord);
       } catch (err) {
         setError(err.message);
         timeoutId = setTimeout(() => navigate('/store'), 5000);
