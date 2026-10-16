@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, UserCog, ShoppingCart as ShoppingCartIcon } from 'lucide-react';
+import { Menu, X, ShoppingCart as ShoppingCartIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
@@ -9,8 +9,21 @@ import { useCart } from '@/hooks/useCart';
 
 const Header = ({ onCartClick }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
   const { cartItems } = useCart();
   const totalItems = useMemo(() => cartItems.reduce((sum, item) => sum + item.quantity, 0), [cartItems]);
+
+  // Secret shortcut: Press Ctrl + Shift + A (or Cmd + Shift + A) anywhere on the website to open admin login
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        navigate('/admin/login');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
 
   const activeLinkStyle = {
     color: 'hsl(var(--accent))',
@@ -108,12 +121,6 @@ const Header = ({ onCartClick }) => {
               <Button asChild variant="outline" size="sm" className="rounded-md border-border text-foreground hover:bg-muted transition-colors">
                 <Link to="/contact">Request a Quote</Link>
               </Button>
-              <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                <Link to="/admin/login">
-                  <UserCog className="mr-2 h-4 w-4" />
-                  Admin
-                </Link>
-              </Button>
             </div>
           </div>
 
@@ -186,12 +193,6 @@ const Header = ({ onCartClick }) => {
                 <Button asChild variant="outline" className="w-full rounded-md border-border text-foreground hover:bg-muted py-6 text-lg">
                   <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
                     Request a Quote
-                  </Link>
-                </Button>
-                <Button asChild variant="ghost" className="w-full text-muted-foreground hover:text-foreground py-6">
-                  <Link to="/admin/login" onClick={() => setIsMobileMenuOpen(false)}>
-                    <UserCog className="mr-2 h-5 w-5" />
-                    Admin Login
                   </Link>
                 </Button>
               </div>
